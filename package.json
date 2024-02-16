@@ -9,7 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "three": "^0.161.0",
     "three.js": "^0.77.1"
   },
   "devDependencies": {
