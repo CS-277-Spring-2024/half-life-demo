@@ -1,5 +1,14 @@
 import * as THREE from "three";
+import { OBJLoader } from "three/addons/loaders/OBJLoader";
+import { createLights, applyShadow} from "./lights";
+import * as CANNON from 'cannon-es'
+import { MeshPhongMaterial } from "three";
 
+var physicsWorld = new CANNON.World();
+
+physicsWorld.gravity.set(0, 0, -9.82);
+
+const objLoader = new OBJLoader();
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -7,50 +16,55 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000,
 );
-
 const renderer = new THREE.WebGLRenderer();
-renderer.shadowMap.enabled = true;
+
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+
 document.body.appendChild(renderer.domElement);
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshToonMaterial({
-  color: 0x00ff00,
+
+scene.add(createLights());
+
+scene.add(new THREE.AmbientLight(0xffffff))
+
+scene.add(new THREE.AxesHelper(10))
+
+camera.position.z = 10;
+camera.position.y = 5;
+camera.position.x = -5;
+
+objLoader.load("resources/models/barrel/barrel.obj", (barrel) => {
+  barrel.scale.setScalar(1);
+
+  console.log(barrel);
+
+  barrel = applyShadow(barrel);
+
+  console.log(barrel.material);
+  // barrel.material = new THREE.MeshPhongMaterial({color: 0xFF00FF});
+  barrel.material = new THREE.MeshNormalMaterial();
+  console.log(barrel.material);
+  // let barrelMesh = new THREE.Mesh(barrel, barrelMaterial);
+
+  // barrelMesh = applyShadow(barrelMesh);
+
+  scene.add(barrel);
 });
-const cube = new THREE.Mesh(geometry, material);
-cube.position.z = 2;
-cube.castShadow = true;
-scene.add(cube);
 
-camera.position.z = 5;
-camera.position.y = -5;
-//camera.position.x = 5;
+objLoader.load("resources/models/backdrop/backdrop.obj", (backdrop) => {
 
-camera.rotation.x = 0.7854;
-// camera.rotation.z = 0.7854;
+  backdrop = applyShadow(backdrop);
+
+	scene.add(backdrop);
+});
 
 function animate() {
   requestAnimationFrame(animate);
-
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-
-  // camera.lookAt(cube);
+  camera.lookAt(0, 0);
   renderer.render(scene, camera);
 }
-
-const floorGeometry = new THREE.PlaneGeometry(10, 10);
-const floorMaterial = new THREE.MeshToonMaterial({
-  color: 0xffffff,
-  side: THREE.DoubleSide,
-});
-const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-floor.receiveShadow = true;
-scene.add(floor);
-
-const light = new THREE.DirectionalLight(0xfff0dd, 2);
-light.position.set(0, 5, 10);
-light.castShadow = true;
-scene.add(light);
 
 animate();
