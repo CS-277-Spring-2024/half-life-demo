@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader";
-import { createLights, applyShadow} from "./lights";
-import * as CANNON from 'cannon-es'
+import { createLights, applyShadow } from "./lights";
+import * as CANNON from "cannon-es";
 import { MeshPhongMaterial } from "three";
 
 var physicsWorld = new CANNON.World();
@@ -25,12 +25,11 @@ renderer.shadowMap.type = THREE.VSMShadowMap;
 
 document.body.appendChild(renderer.domElement);
 
-
 scene.add(createLights());
 
-scene.add(new THREE.AmbientLight(0xffffff))
+scene.add(new THREE.AmbientLight(0xffffff));
 
-scene.add(new THREE.AxesHelper(10))
+scene.add(new THREE.AxesHelper(10));
 
 camera.position.z = 10;
 camera.position.y = 5;
@@ -55,10 +54,9 @@ objLoader.load("resources/models/barrel/barrel.obj", (barrel) => {
 });
 
 objLoader.load("resources/models/backdrop/backdrop.obj", (backdrop) => {
-
   backdrop = applyShadow(backdrop);
 
-	scene.add(backdrop);
+  scene.add(backdrop);
 });
 
 function animate() {

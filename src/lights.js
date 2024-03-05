@@ -10,7 +10,7 @@ function createLights() {
   return light;
 }
 
-function applyShadow(shadowTarget){
+function applyShadow(shadowTarget) {
   shadowTarget.castShadow = true;
   shadowTarget.recieveShadow = true;
 
