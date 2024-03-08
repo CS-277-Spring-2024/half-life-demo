@@ -48,8 +48,8 @@ scene.add(createLights());
 scene.add(new THREE.AxesHelper(10));
 
 camera.position.z = 10;
-camera.position.y = 5;
-camera.position.x = -5;
+camera.position.y = 10;
+camera.position.x = -10;
 
 objLoader.load("resources/models/barrel/barrel.obj", (barrel) => {
   barrelMesh = barrel.children[0];
