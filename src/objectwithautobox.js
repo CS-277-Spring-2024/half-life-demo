@@ -23,7 +23,7 @@ class ObjectWithAutoBox {
     this.debug = false;
 
     worldScene.add(this.object);
-    physicsWorld.addBody(this.body);
+    // physicsWorld.addBody(this.body);
   }
 }
 
