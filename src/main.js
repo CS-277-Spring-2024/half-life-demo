@@ -14,6 +14,7 @@ import Stats from "stats.js";
 
 let barrelBody;
 let barrelMesh;
+let barrelObject;
 let delta;
 
 let worldObjects = [];
@@ -57,33 +58,8 @@ scene.add(createLights());
 scene.add(new THREE.AxesHelper(10));
 
 objLoader.load("resources/models/barrel/barrel.obj", (barrel) => {
-  barrelMesh = barrel.children[0];
-  const barrelBox = new THREE.Box3().setFromObject(barrel);
-  const barrelShape = new CANNON.Box(
-    new CANNON.Vec3(
-      (barrelBox.max.x - barrelBox.min.x) / 2,
-      (barrelBox.max.y - barrelBox.min.y) / 2,
-      (barrelBox.max.z - barrelBox.min.z) / 2,
-    ),
-  );
-  barrelBody = new CANNON.Body({ mass: 1 });
-  barrelBody.addShape(barrelShape);
-  barrelBody.position.x = barrelMesh.position.x;
-  barrelBody.position.y = barrelMesh.position.y;
-  barrelBody.position.z = barrelMesh.position.z;
-  physicsWorld.addBody(barrelBody);
-
-  barrel.scale.setScalar(1);
-
-  console.log(barrel);
-
-  barrel = applyShadow(barrel);
-
-  console.log(barrel.material);
-  barrel.material = new THREE.MeshNormalMaterial();
-  console.log(barrel.material);
-
-  scene.add(barrel);
+  barrelObject = new ObjectWithAutoBox(barrel, 1, scene, physicsWorld);
+  worldObjects.push(barrelObject);
 });
 
 objLoader.load("resources/models/backdrop/backdrop.obj", (backdrop) => {
@@ -100,13 +76,13 @@ objLoader.load("resources/models/backdrop/backdrop.obj", (backdrop) => {
 });
 
 function animate() {
+  stats.begin();
   delta = Math.min(clock.getDelta(), 0.1);
   physicsWorld.step(delta);
-  stats.begin();
-  if (barrelMesh && barrelBody) {
-    barrelMesh.position.x = barrelBody.position.x;
-    barrelMesh.position.y = barrelBody.position.y;
-    barrelMesh.position.z = barrelBody.position.z;
+  for (let i in worldObjects) {
+    worldObjects[i].mesh.position.x = worldObjects[i].body.position.x;
+    worldObjects[i].mesh.position.y = worldObjects[i].body.position.y;
+    worldObjects[i].mesh.position.z = worldObjects[i].body.position.z;
   }
   requestAnimationFrame(animate);
   camera.lookAt(0, 0);
