@@ -18,6 +18,8 @@ let crabObject;
 let delta;
 
 let gun = false;
+let moved = false;
+let mined = false;
 
 let worldObjects = [];
 
@@ -53,6 +55,24 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 scene.add(createLights());
+
+document.body.addEventListener("keydown", function (event) {
+  const key = event.key; // "a", "1", "Shift", etc.
+  if (key == 1) {
+    moved = true;
+  }
+  if (key == 2) {
+    mined = true;
+  }
+  if (key == 1 || key == 2) {
+    if (moved == true && mined == true) {
+      alert("You notice a small hole in the wall");
+    }
+  }
+  if (key == 3 && moved == true && mined == true) {
+    alert("Escaped, Yay!");
+  }
+});
 
 scene.add(new THREE.AxesHelper(10));
 function genBarrel(x, y, z) {
@@ -106,11 +126,13 @@ objLoader.load("resources/models/backdrop/backdrop.obj", (backdrop) => {
   scene.add(backdrop);
 });
 
-let crabMove = true;
 let crab = genCrab(0, 0, 3);
 
 function animate() {
-  console.log("Crab: ", crab);
+  if (moved == true && worldObjects[2]) {
+    worldObjects[2].body.position.x = -2;
+  }
+  console.log(mined, moved);
   stats.begin();
   delta = Math.min(clock.getDelta(), 0.1);
   physicsWorld.step(delta);
